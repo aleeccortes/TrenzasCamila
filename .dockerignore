@@ -1,0 +1,10 @@
+.git
+.idea
+.vscode
+target
+data
+.env
+Camila
+README.md
+*.iml
+*.log

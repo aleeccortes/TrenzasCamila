@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reservas | Camila</title>
+  <link rel="stylesheet" href="assets/app.css">
+</head>
+<body class="admin-page">
+  <header class="admin-header">
+    <a class="brand dark" href="index.html">CAMILA<span>.</span></a>
+    <div class="admin-account">
+      <span class="account-dot" aria-hidden="true"></span>
+      <span id="admin-name"></span>
+      <button id="logout" class="text-button light">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <main class="admin-main">
+    <section class="admin-title">
+      <div>
+        <p class="eyebrow">PANEL DE CONTROL</p>
+        <h1>Reservas</h1>
+        <p class="admin-intro">Organizá los próximos turnos y mantené los datos de tus clientes al día.</p>
+      </div>
+      <button id="open-new" class="button admin-primary" type="button"><span>+</span> Nueva reserva</button>
+    </section>
+
+    <section class="admin-summary" aria-label="Resumen de reservas">
+      <article><span>Total</span><strong id="reservation-count">0</strong><small>reservas registradas</small></article>
+      <article><span>Próximas</span><strong id="upcoming-count">0</strong><small>desde hoy en adelante</small></article>
+      <article class="summary-security"><span>Cuenta</span><strong>Protegida</strong><button id="open-password" type="button">Cambiar contraseña →</button></article>
+    </section>
+
+    <section class="reservations-section">
+      <div class="section-bar">
+        <div><h2>Agenda</h2><p>Buscá una reserva por fecha o teléfono.</p></div>
+        <div class="toolbar">
+          <label><span>Fecha</span><input id="filter-date" type="date"></label>
+          <label><span>Teléfono</span><input id="filter-phone" inputmode="numeric" placeholder="Mínimo 4 dígitos"></label>
+          <button id="filter" class="secondary-button" type="button">Buscar</button>
+          <button id="clear-filter" class="clear-button" type="button">Limpiar</button>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div id="loading" class="empty">Cargando reservas...</div>
+        <div class="table-wrap">
+          <table id="reservations-table" class="hidden">
+            <thead><tr><th>Cliente</th><th>Contacto</th><th>Fecha</th><th>Estilo</th><th><span class="sr-only">Acciones</span></th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div id="empty" class="empty-state hidden"><span>0</span><h3>Sin reservas</h3><p>No encontramos turnos con esos filtros.</p></div>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="new-dialog" class="admin-dialog">
+    <div class="dialog-heading"><div><p class="eyebrow">NUEVO TURNO</p><h2>Cargar reserva</h2><p>Ingresá los datos acordados con la clienta.</p></div><button class="dialog-close" type="button" data-close="new-dialog" aria-label="Cerrar">×</button></div>
+    <form id="new-form" class="dialog-form" novalidate>
+      <div class="form-grid">
+        <label><span>Nombre completo</span><input name="nombre" autocomplete="name" minlength="2" maxlength="80" placeholder="Ej. Martina Pérez" required></label>
+        <label><span>Teléfono</span><input name="telefono" type="tel" autocomplete="tel" minlength="8" maxlength="25" placeholder="Ej. 261 555 1234" required></label>
+        <label><span>Fecha del turno</span><input name="fechaReserva" type="date" required></label>
+        <label><span>Tipo de trenza</span><input name="tipoTrenza" minlength="3" maxlength="120" placeholder="Ej. Box braids medianas" required></label>
+      </div>
+      <p id="new-status" class="status" role="alert"></p>
+      <div class="dialog-actions"><button class="clear-button" type="button" data-close="new-dialog">Cancelar</button><button class="button" type="submit">Guardar reserva</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="password-dialog" class="admin-dialog password-dialog">
+    <div class="dialog-heading"><div><p class="eyebrow">SEGURIDAD</p><h2>Cambiar contraseña</h2><p>Elegí una clave única que no uses en otros sitios.</p></div><button class="dialog-close" type="button" data-close="password-dialog" aria-label="Cerrar">×</button></div>
+    <form id="password-form" class="dialog-form" novalidate>
+      <label class="password-field"><span>Contraseña actual</span><div><input name="actual" type="password" autocomplete="current-password" required><button class="show-password" type="button" aria-label="Mostrar contraseña">Ver</button></div></label>
+      <label class="password-field"><span>Nueva contraseña</span><div><input name="nueva" type="password" autocomplete="new-password" minlength="10" maxlength="72" required><button class="show-password" type="button" aria-label="Mostrar contraseña">Ver</button></div></label>
+      <div class="strength" aria-live="polite"><div><span id="strength-bar"></span></div><p id="strength-label">Ingresá al menos 10 caracteres.</p></div>
+      <label class="password-field"><span>Repetir nueva contraseña</span><div><input name="confirmacion" type="password" autocomplete="new-password" minlength="10" maxlength="72" required><button class="show-password" type="button" aria-label="Mostrar contraseña">Ver</button></div></label>
+      <ul class="password-rules"><li data-rule="length">10 caracteres</li><li data-rule="upper">Una mayúscula</li><li data-rule="lower">Una minúscula</li><li data-rule="number">Un número</li><li data-rule="symbol">Un símbolo</li></ul>
+      <p id="password-status" class="status" role="alert"></p>
+      <div class="dialog-actions"><button class="clear-button" type="button" data-close="password-dialog">Cancelar</button><button class="button" type="submit">Actualizar contraseña</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="delete-dialog" class="admin-dialog confirm-dialog">
+    <div class="danger-mark" aria-hidden="true">!</div><h2>¿Eliminar esta reserva?</h2><p>Vas a quitar el turno de <strong id="delete-name"></strong> del <span id="delete-date"></span>. Esta acción no se puede deshacer.</p>
+    <div class="dialog-actions"><button class="clear-button" type="button" data-close="delete-dialog">Conservar</button><button id="confirm-delete" class="danger-button" type="button">Sí, eliminar</button></div>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="assets/api.js"></script>
+  <script src="assets/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Reservas de trenzas personalizadas en Mendoza">
+  <title>Camila Trenzas | Tu estilo, trenzado</title>
+  <link rel="stylesheet" href="assets/app.css">
+</head>
+<body>
+  <nav class="nav shell" aria-label="Navegacion principal">
+    <a class="brand" href="index.html">CAMILA<span>.</span></a>
+    <div class="nav-links"><a href="#estilos">Estilos</a><a href="#reserva">Reservar</a><a class="nav-admin" href="login.html">Administracion</a></div>
+  </nav>
+  <main>
+    <section class="hero shell">
+      <div class="hero-copy"><p class="eyebrow">TRENZAS EN MENDOZA</p><h1>Tu estilo.<br><em>Bien trenzado.</em></h1>
+        <p class="lede">Diseños hechos a tu medida, con tiempo, detalle y una terminacion que habla por vos.</p>
+        <a class="button" href="#reserva">Quiero mi turno <span aria-hidden="true">→</span></a>
+      </div>
+      <div class="hero-art"><div class="arch"><img src="assets/img/trenzas.jpeg" alt="Modelo con trenzas"></div><span class="stamp">HECHO<br>A MANO</span></div>
+    </section>
+    <section id="estilos" class="styles-section"><div class="shell"><p class="eyebrow">EL LOOK QUE BUSCAS</p><div class="section-heading"><h2>Elegí tu estilo</h2><p>Traé una referencia o dejate asesorar. Cada diseño se adapta a tu pelo y personalidad.</p></div>
+      <div class="style-grid">
+        <article class="style-card"><span>01</span><h3>Box braids</h3><p>Versatiles, prolijas y listas para acompañarte varias semanas.</p></article>
+        <article class="style-card featured"><span>02</span><h3>Trenzas pegadas</h3><p>Diseños graficos y personalizados para un look con identidad.</p></article>
+        <article class="style-card"><span>03</span><h3>Peinados</h3><p>Recogidos y detalles trenzados para eventos y dias especiales.</p></article>
+      </div></div>
+    </section>
+    <section id="reserva" class="booking shell">
+      <div><p class="eyebrow">TU PROXIMO LOOK</p><h2>Reservá tu turno</h2><p>Completá tus datos. Te contactaremos para confirmar horario, duracion y precio final.</p><div class="booking-note"><strong>Importante</strong><span>La solicitud no confirma automaticamente el turno.</span></div></div>
+      <form id="booking-form" class="form-card" novalidate>
+        <label>Nombre completo<input name="nombre" autocomplete="name" minlength="2" maxlength="80" required></label>
+        <label>Telefono<input name="telefono" type="tel" autocomplete="tel" minlength="8" maxlength="25" placeholder="Ej. 261 555 1234" required></label>
+        <label>Fecha preferida<input name="fechaReserva" type="date" required></label>
+        <label>¿Que estilo querés?<textarea name="tipoTrenza" minlength="3" maxlength="120" rows="3" placeholder="Contanos tu idea" required></textarea></label>
+        <button class="button" type="submit">Enviar solicitud</button><p id="booking-status" class="status" role="status"></p>
+      </form>
+    </section>
+  </main>
+  <footer><div class="shell"><a class="brand" href="/">CAMILA<span>.</span></a><p>Trenzas con identidad, hechas en Mendoza.</p><small>© 2026 Camila Trenzas</small></div></footer>
+  <script src="assets/api.js"></script><script src="assets/home.js"></script>
+</body>
+</html>
