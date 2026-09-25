@@ -267,18 +267,26 @@ function App() {
 
 // Modal Reserva Component
 function ModalReserva({ servicio, serviciosList, csrfToken, onCerrar, esAdmin = false, onReservaCreada }) {
+    const defaultServ = servicio || (serviciosList && serviciosList[0] ? serviciosList[0] : null);
     const [nombre, setNombre] = useState('');
     const [telefono, setTelefono] = useState('');
     const [email, setEmail] = useState('');
     const [fechaReserva, setFechaReserva] = useState('');
-    const [servicioId, setServicioId] = useState(servicio ? servicio.id : (serviciosList[0]?.id || ''));
-    const [tipoTrenzaText, setTipoTrenzaText] = useState(servicio ? servicio.nombre : (serviciosList[0]?.nombre || ''));
+    const [servicioId, setServicioId] = useState(defaultServ ? defaultServ.id : '');
+    const [tipoTrenzaText, setTipoTrenzaText] = useState(defaultServ ? defaultServ.nombre : '');
     const [errorMsg, setErrorMsg] = useState('');
     const [exito, setExito] = useState(false);
     const [submitting, setSubmitting] = useState(false);
 
     // Min date = today
     const today = new Date().toISOString().split('T')[0];
+
+    useEffect(() => {
+        if (!servicioId && serviciosList && serviciosList.length > 0) {
+            setServicioId(serviciosList[0].id);
+            setTipoTrenzaText(serviciosList[0].nombre);
+        }
+    }, [serviciosList]);
 
     const handleServicioChange = (e) => {
         const id = e.target.value;
@@ -292,19 +300,29 @@ function ModalReserva({ servicio, serviciosList, csrfToken, onCerrar, esAdmin = 
         setErrorMsg('');
         setSubmitting(true);
 
+        let tokenHeader = csrfToken?.headerName || 'X-XSRF-TOKEN';
+        let tokenVal = csrfToken?.token || '';
+        const cookieMatch = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
+        if (cookieMatch && cookieMatch[1]) {
+            tokenVal = decodeURIComponent(cookieMatch[1]);
+        }
+
+        const selectedService = serviciosList.find(x => x.id == servicioId);
+        const finalTipoTrenza = tipoTrenzaText || (selectedService ? selectedService.nombre : 'Trenzas');
+
         try {
             const res = await fetch('/api/reservas', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    [csrfToken.headerName]: csrfToken.token
+                    [tokenHeader]: tokenVal
                 },
                 body: JSON.stringify({
                     nombre,
                     telefono,
-                    email,
+                    email: email && email.trim() ? email.trim() : null,
                     fechaReserva,
-                    tipoTrenza: tipoTrenzaText,
+                    tipoTrenza: finalTipoTrenza,
                     servicioId: servicioId ? Number(servicioId) : null
                 })
             });
@@ -313,8 +331,13 @@ function ModalReserva({ servicio, serviciosList, csrfToken, onCerrar, esAdmin = 
                 setExito(true);
                 if (onReservaCreada) onReservaCreada();
             } else {
-                const data = await res.json();
-                setErrorMsg(data.message || 'Ocurrió un error al agendar la reserva.');
+                const data = await res.json().catch(() => ({}));
+                let msgs = [];
+                if (data.message) msgs.push(data.message);
+                if (data.fields) {
+                    Object.values(data.fields).forEach(fMsg => msgs.push(fMsg));
+                }
+                setErrorMsg(msgs.length > 0 ? msgs.join('. ') : 'Ocurrió un error al agendar la reserva.');
             }
         } catch (err) {
             setErrorMsg('Error de conexión al servidor.');
@@ -361,8 +384,8 @@ function ModalReserva({ servicio, serviciosList, csrfToken, onCerrar, esAdmin = 
                         </p>
 
                         {errorMsg && (
-                            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl">
-                                {errorMsg}
+                            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl font-medium leading-relaxed">
+                                ⚠️ {errorMsg}
                             </div>
                         )}
 
