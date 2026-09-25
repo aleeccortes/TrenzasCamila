@@ -149,7 +149,7 @@ function App() {
             <section id="inicio" className="relative bg-gradient-to-b from-rosa-100/70 to-rosa-50 py-16 px-4">
                 <div className="max-w-5xl mx-auto text-center">
                     <span className="bg-rosa-200/80 text-rosa-800 text-xs font-bold uppercase tracking-wider px-4 py-1.5 rounded-full inline-block mb-4">
-                        Especialista en Trenzas Africanas & Peinados
+                        Especialista en Trenzas Africanas & Peinados en Mendoza
                     </span>
                     <h2 className="font-serif-custom text-4xl md:text-6xl font-extrabold text-rosa-900 mb-6 leading-tight">
                         Resalta tu belleza natural con <span className="text-rosa-600 italic">estilo único</span>
@@ -237,9 +237,14 @@ function App() {
                             <p className="text-xs text-rosa-200">Reserva de turnos y catálogo exclusivo</p>
                         </div>
                     </div>
-                    <div className="text-sm text-rosa-200 text-center md:text-right">
-                        <p>📍 Buenos Aires, Argentina</p>
-                        <p>💬 Consultas por WhatsApp</p>
+                    <div className="text-sm text-rosa-200 text-center md:text-right space-y-1">
+                        <p className="font-medium">📍 Mendoza, Argentina</p>
+                        <p>
+                            💬 WhatsApp: <a href="https://wa.me/5492612502696" target="_blank" rel="noopener noreferrer" className="underline hover:text-white font-semibold">2612502696</a>
+                        </p>
+                        <p>
+                            📸 Instagram: <a href="https://instagram.com/camila.colombo3" target="_blank" rel="noopener noreferrer" className="underline hover:text-white font-semibold">@camila.colombo3</a>
+                        </p>
                     </div>
                 </div>
                 <div className="max-w-6xl mx-auto text-center text-xs text-rosa-300">
@@ -261,7 +266,7 @@ function App() {
 }
 
 // Modal Reserva Component
-function ModalReserva({ servicio, serviciosList, csrfToken, onCerrar }) {
+function ModalReserva({ servicio, serviciosList, csrfToken, onCerrar, esAdmin = false, onReservaCreada }) {
     const [nombre, setNombre] = useState('');
     const [telefono, setTelefono] = useState('');
     const [email, setEmail] = useState('');
@@ -306,6 +311,7 @@ function ModalReserva({ servicio, serviciosList, csrfToken, onCerrar }) {
 
             if (res.ok) {
                 setExito(true);
+                if (onReservaCreada) onReservaCreada();
             } else {
                 const data = await res.json();
                 setErrorMsg(data.message || 'Ocurrió un error al agendar la reserva.');
@@ -332,21 +338,27 @@ function ModalReserva({ servicio, serviciosList, csrfToken, onCerrar }) {
                         <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-4">
                             ✓
                         </div>
-                        <h4 className="font-serif-custom text-2xl font-bold text-rosa-900 mb-2">¡Reserva Registrada!</h4>
+                        <h4 className="font-serif-custom text-2xl font-bold text-rosa-900 mb-2">
+                            {esAdmin ? '¡Reserva Creada por Admin!' : '¡Reserva Registrada!'}
+                        </h4>
                         <p className="text-gray-600 text-sm mb-6 leading-relaxed">
-                            Gracias <strong>{nombre}</strong>. Tu turno para <strong>{tipoTrenzaText}</strong> el día <strong>{fechaReserva}</strong> ha sido agendado exitosamente.
+                            Turno agendado para <strong>{nombre}</strong> ({tipoTrenzaText}) el día <strong>{fechaReserva}</strong>.
                         </p>
                         <button 
                             onClick={onCerrar}
                             className="bg-rosa-600 hover:bg-rosa-700 text-white font-semibold px-6 py-2.5 rounded-full transition-colors w-full"
                         >
-                            Entendido
+                            Cerrar
                         </button>
                     </div>
                 ) : (
                     <div>
-                        <h4 className="font-serif-custom text-2xl font-bold text-rosa-900 mb-1">Agendar Tu Turno 🌸</h4>
-                        <p className="text-xs text-gray-500 mb-6">Completa tus datos para confirmar tu cita.</p>
+                        <h4 className="font-serif-custom text-2xl font-bold text-rosa-900 mb-1">
+                            {esAdmin ? 'Nueva Reserva (Administración) 🌸' : 'Agendar Tu Turno 🌸'}
+                        </h4>
+                        <p className="text-xs text-gray-500 mb-6">
+                            {esAdmin ? 'Crea un turno manualmente para un cliente.' : 'Completa tus datos para confirmar tu cita.'}
+                        </p>
 
                         {errorMsg && (
                             <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl">
@@ -369,11 +381,11 @@ function ModalReserva({ servicio, serviciosList, csrfToken, onCerrar }) {
                             </div>
 
                             <div>
-                                <label className="block text-gray-700 font-semibold mb-1">Nombre Completo *</label>
+                                <label className="block text-gray-700 font-semibold mb-1">Nombre Completo del Cliente *</label>
                                 <input 
                                     type="text" 
                                     required
-                                    placeholder="Ej. Camila Pérez"
+                                    placeholder="Ej. María Colombo"
                                     value={nombre} 
                                     onChange={e => setNombre(e.target.value)}
                                     className="w-full px-3.5 py-2.5 rounded-xl border border-rosa-200 focus:outline-none focus:ring-2 focus:ring-rosa-500"
@@ -385,7 +397,7 @@ function ModalReserva({ servicio, serviciosList, csrfToken, onCerrar }) {
                                 <input 
                                     type="tel" 
                                     required
-                                    placeholder="Ej. +5491112345678"
+                                    placeholder="Ej. 2612502696"
                                     value={telefono} 
                                     onChange={e => setTelefono(e.target.value)}
                                     className="w-full px-3.5 py-2.5 rounded-xl border border-rosa-200 focus:outline-none focus:ring-2 focus:ring-rosa-500"
@@ -404,7 +416,7 @@ function ModalReserva({ servicio, serviciosList, csrfToken, onCerrar }) {
                             </div>
 
                             <div>
-                                <label className="block text-gray-700 font-semibold mb-1">Fecha Deseada *</label>
+                                <label className="block text-gray-700 font-semibold mb-1">Fecha del Turno *</label>
                                 <input 
                                     type="date" 
                                     required
@@ -420,7 +432,7 @@ function ModalReserva({ servicio, serviciosList, csrfToken, onCerrar }) {
                                 disabled={submitting}
                                 className="w-full bg-rosa-600 hover:bg-rosa-700 text-white font-bold py-3 rounded-xl shadow-md shadow-rosa-200 transition-all mt-4 disabled:opacity-50"
                             >
-                                {submitting ? 'Procesando...' : 'Confirmar Reserva ✨'}
+                                {submitting ? 'Procesando...' : (esAdmin ? 'Guardar Reserva ✨' : 'Confirmar Reserva ✨')}
                             </button>
                         </form>
                     </div>
@@ -539,9 +551,11 @@ function AdminDashboard({ adminUsername, csrfToken, onLogout }) {
     const [loading, setLoading] = useState(false);
     const [filtroFecha, setFiltroFecha] = useState('');
     const [filtroTelefono, setFiltroTelefono] = useState('');
+    const [modalCrearReservaAdmin, setModalCrearReservaAdmin] = useState(false);
 
     // Load data based on active tab
     useEffect(() => {
+        cargarServiciosAdmin();
         if (tab === 'reservas') cargarReservas();
         if (tab === 'catalogo') cargarServiciosAdmin();
         if (tab === 'facturacion') cargarReporteFacturacion();
@@ -725,7 +739,7 @@ function AdminDashboard({ adminUsername, csrfToken, onLogout }) {
             <main className="max-w-6xl mx-auto p-6 flex-1 w-full">
                 {tab === 'reservas' && (
                     <div>
-                        {/* Filtros */}
+                        {/* Bar de Acciones y Filtros */}
                         <div className="bg-white p-4 rounded-2xl border border-rosa-200 mb-6 flex flex-wrap items-center justify-between gap-4 shadow-sm">
                             <div className="flex flex-wrap items-center gap-3 text-sm">
                                 <span className="font-semibold text-gray-700">Filtrar por:</span>
@@ -757,10 +771,36 @@ function AdminDashboard({ adminUsername, csrfToken, onLogout }) {
                                     </button>
                                 )}
                             </div>
-                            <span className="text-xs text-rosa-700 font-bold bg-rosa-100 px-3 py-1 rounded-full">
-                                Total: {reservas.length} reservas
-                            </span>
+                            
+                            <div className="flex items-center gap-3">
+                                <button 
+                                    onClick={() => setModalCrearReservaAdmin(true)}
+                                    className="bg-rosa-600 hover:bg-rosa-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-sm shadow-rosa-200 hover:scale-105"
+                                >
+                                    ✨ + Crear Reserva (Admin)
+                                </button>
+                                <span className="text-xs text-rosa-700 font-bold bg-rosa-100 px-3 py-1.5 rounded-full">
+                                    Total: {reservas.length} reservas
+                                </span>
+                            </div>
                         </div>
+
+                        {/* Modal para Crear Reserva desde Admin */}
+                        {modalCrearReservaAdmin && (
+                            <ModalReserva 
+                                servicio={null}
+                                serviciosList={servicios}
+                                csrfToken={csrfToken}
+                                esAdmin={true}
+                                onReservaCreada={() => {
+                                    cargarReservas();
+                                }}
+                                onCerrar={() => {
+                                    setModalCrearReservaAdmin(false);
+                                    cargarReservas();
+                                }}
+                            />
+                        )}
 
                         {/* Tabla Reservas */}
                         <div className="bg-white rounded-2xl border border-rosa-200 overflow-hidden shadow-sm">
