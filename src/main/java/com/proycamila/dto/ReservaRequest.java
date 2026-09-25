@@ -14,7 +14,7 @@ public record ReservaRequest(
         @Pattern(regexp = "^\\+?[0-9 ()-]+$", message = "El teléfono no es válido")
         String telefono,
 
-        @Email(message = "El formato del correo electrónico no es válido")
+        @Pattern(regexp = "^$|^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$", message = "El formato del correo electrónico no es válido")
         @Size(max = 100, message = "El correo electrónico no puede superar 100 caracteres")
         String email,
 
