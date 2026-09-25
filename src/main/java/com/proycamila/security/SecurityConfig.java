@@ -3,7 +3,9 @@ package com.proycamila.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,6 +18,7 @@ import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +34,10 @@ public class SecurityConfig {
                 .toList();
     }
 
-    @Bean PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(12); }
+    @Bean
+    PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder(12);
+    }
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
@@ -63,11 +69,12 @@ public class SecurityConfig {
                     .sessionFixation(fixation -> fixation.migrateSession())
                     .maximumSessions(1))
             .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/", "/index.html", "/login.html", "/assets/**", "/favicon.ico",
+                    .requestMatchers("/", "/index.html", "/assets/**", "/favicon.ico",
                             "/api/auth/csrf", "/actuator/health/**", "/error").permitAll()
-                    .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/reservas").permitAll()
-                    .requestMatchers("/api/**", "/admin.html").hasRole("ADMIN")
-                    .anyRequest().denyAll())
+                    .requestMatchers(HttpMethod.GET, "/api/servicios").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/reservas").permitAll()
+                    .requestMatchers("/api/**", "/admin/**").hasRole("ADMIN")
+                    .anyRequest().permitAll())
             .formLogin(form -> form.loginProcessingUrl("/login")
                     .successHandler((request, response, authentication) -> {
                         response.setStatus(HttpServletResponse.SC_OK);
@@ -77,7 +84,7 @@ public class SecurityConfig {
                     .failureHandler((request, response, exception) -> {
                         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-                        mapper.writeValue(response.getWriter(), Map.of("message", "Usuario o contrasenia incorrectos"));
+                        mapper.writeValue(response.getWriter(), Map.of("message", "Usuario o contraseña incorrectos"));
                     }))
             .logout(logout -> logout.logoutUrl("/logout").invalidateHttpSession(true).deleteCookies("JSESSIONID")
                     .logoutSuccessHandler((request, response, authentication) -> response.setStatus(HttpServletResponse.SC_NO_CONTENT)))
@@ -85,7 +92,7 @@ public class SecurityConfig {
                     .authenticationEntryPoint((request, response, exception) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED))
                     .accessDeniedHandler((request, response, exception) -> response.sendError(HttpServletResponse.SC_FORBIDDEN)))
             .headers(headers -> headers
-                    .contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self'; img-src 'self' https: data:; style-src 'self'; script-src 'self'; connect-src 'self'; frame-ancestors 'none'"))
+                    .contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self' https: data: blob: 'unsafe-inline' 'unsafe-eval'; img-src 'self' https: data:; style-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; connect-src 'self' https:; frame-ancestors 'none'"))
                     .frameOptions(frame -> frame.deny()));
         return http.build();
     }

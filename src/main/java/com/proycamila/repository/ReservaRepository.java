@@ -10,4 +10,5 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
     List<Reserva> findByTelefonoContainingOrderByCreadaEnDesc(String telefono);
     List<Reserva> findAllByOrderByCreadaEnDesc();
     boolean existsByTelefonoAndFechaReserva(String telefono, LocalDate fechaReserva);
+    List<Reserva> findByFechaReservaBetweenOrderByFechaReservaAsc(LocalDate inicio, LocalDate fin);
 }
